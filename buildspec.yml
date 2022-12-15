@@ -12,7 +12,7 @@ phases:
 
   build:
     commands:
-      - python3 aws-cfn-helper-script.py $region $applicationname $destroy
+      - python3 aws-cfn-helper-script.py $destroy
       - echo "Post apply build"
   post_build:
     commands:
