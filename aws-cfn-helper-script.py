@@ -12,7 +12,7 @@ from subprocess import check_output
 
 # myregion = sys.argv[1]
 # prefix = sys.argv[2]
-# destroy = sys.argv[3]
+destroy = sys.argv[1]
 
 mycommands = ["terraform"]
 
