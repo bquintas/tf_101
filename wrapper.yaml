@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "A codebuild system to run terraform "
+Parameters:
+  ProjectName:
+    Description: Discretionary string for tags and naming
+    Type: String
+    Default: myproject
+Resources:
+  S3StateAndSoftware:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Join
+        - .
+        - - !Ref ProjectName
+          - !Ref "AWS::Region"
+          - terraform-state-software
+  Adminrole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Join
+        - .
+        - - !Ref "AWS::StackName"
+          - !Ref "AWS::Region"
+          - codebuild
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Path: /
+      Policies:
+        - PolicyName: AdminAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action: "*"
+                Effect: Allow
+                Resource: "*"
+  BuildProject:
+    Type: "AWS::CodeBuild::Project"
+    Properties:
+      Name: !Join
+        - _
+        - - !Ref "AWS::StackName"
+          - !Ref "AWS::Region"
+          - build_Application
+      Description: tf build
+      ServiceRole: !Ref Adminrole
+      Artifacts:
+        Type: no_artifacts
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+        EnvironmentVariables:
+          - Name: ProjectName
+            Value: !Ref ProjectName
+          - Name: region
+            Value: !Ref "AWS::Region"
+          - Name: applicationname
+            Value: !Ref "AWS::StackName"
+          - Name: destroy
+            Value: "False"
+      Source:
+        Location: "https://github.com/bquintas/tf_101"
+        Type: GITHUB
+      TimeoutInMinutes: 10
+      Tags:
+        - Key: Project
+          Value: TerraformWrapper
