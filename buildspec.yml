@@ -8,12 +8,8 @@ phases:
       - sudo yum install -y yum-utils
       - sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
       - sudo yum -y install terraform jq
-      - TEMP_ROLE=$(aws sts assume-role --role-arn $role --role-session-name test)
-      - export TEMP_ROLE
-      - export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
-      - export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
-      - export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
-      - echo $TEMP_ROLE
+      - aws sts get-caller-identity
+
   build:
     commands:
       - echo "Post apply build"
