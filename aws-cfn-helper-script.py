@@ -4,7 +4,7 @@ from subprocess import check_output
 
 
 
-if len(sys.argv) != 1:
+if len(sys.argv) != 2:
     print ("Error wrong parameter number")
     print ("Usage: python aws-cfn-helper-script.py $destroy")
     print ("Example: python aws-cfn-helper-script.py False")
